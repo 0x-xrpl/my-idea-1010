@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuwa Mint – Cloud Sticker Book</title>
+<style>
+:root{--ink:#5a4a7a;--soft:#8a78a8;--pink:#ff9fbd;--lav:#c9b6ff;--sol:linear-gradient(90deg,#7b3fe4,#12a37a);--card:rgba(255,255,255,.72)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(#ffd6e7,#e3cffb 55%,#c9d6ff) fixed;overflow-x:hidden;line-height:1.6}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #7b3fe4;outline-offset:2px;border-radius:8px}
+.bgcloud{position:fixed;border-radius:40px;background:rgba(255,255,255,.45);filter:blur(6px);z-index:0;animation:drift 14s ease-in-out infinite alternate}
+.bgcloud.a{top:62%;left:-30px;width:150px;height:56px}
+.bgcloud.b{top:80%;right:-20px;width:180px;height:64px;animation-delay:-5s}
+.bgcloud.c{top:30%;right:-40px;width:120px;height:44px;animation-delay:-9s;opacity:.7}
+@keyframes drift{to{transform:translateX(26px)}}
+.tw{position:fixed;z-index:0;font-size:16px;animation:tw 3s ease-in-out infinite;pointer-events:none}
+@keyframes tw{50%{opacity:.25;transform:scale(.8)}}
+header{position:relative;z-index:5;display:flex;align-items:center;gap:8px;justify-content:space-between;max-width:620px;margin:0 auto;padding:12px 14px 4px}
+.logo{font-weight:800;font-size:18px;letter-spacing:.02em;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.hr{display:flex;gap:8px;align-items:center}
+.chip{border:0;background:var(--card);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;box-shadow:0 3px 12px rgba(150,120,200,.25);white-space:nowrap}
+.lang{display:flex;background:var(--card);border-radius:999px;padding:3px;box-shadow:0 3px 12px rgba(150,120,200,.25)}
+.lang button{border:0;background:transparent;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.lang button[aria-pressed=true]{background:var(--ink);color:#fff}
+.wpanel{position:absolute;z-index:20;right:14px;top:56px;width:min(310px,calc(100vw - 28px));background:#fff;border-radius:18px;padding:16px;box-shadow:0 14px 40px rgba(110,80,170,.35);font-size:14px}
+.wpanel[hidden]{display:none}
+.wpanel h3{margin:0 0 8px;font-size:15px}
+.wrow{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed #e6dcf7}
+.wrow span:first-child{color:var(--soft)}
+.wnote{font-size:12px;color:var(--soft);margin:10px 0}
+.wbtns{display:flex;gap:8px;flex-wrap:wrap}
+.sbtn{border:0;background:#f1eaff;border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700}
+.sbtn.pri{background:var(--sol);color:#fff}
+main{position:relative;z-index:2;max-width:620px;margin:0 auto;padding:6px 14px 40px}
+.tabs{display:flex;gap:6px;background:var(--card);border-radius:999px;padding:4px;margin:6px 0 10px;box-shadow:0 4px 14px rgba(150,120,200,.2)}
+.tabs button{flex:1;border:0;background:transparent;padding:9px;border-radius:999px;font-weight:700;font-size:14px}
+.tabs button[aria-selected=true]{background:#fff;box-shadow:0 3px 10px rgba(150,120,200,.3)}
+section[hidden]{display:none}
+.lvl{display:flex;justify-content:center;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--soft)}
+.dots i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;margin-right:3px;box-shadow:inset 0 0 0 1.5px #d8c8f5}
+.dots i.on{background:var(--pink);box-shadow:0 0 8px #ff9fbd}
+.botwrap{position:relative;width:min(320px,82vw);margin:6px auto 0}
+.botwrap:before{content:"";position:absolute;inset:6% -8% 0;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0));filter:blur(8px)}
+.bot{position:relative;width:100%;height:auto;display:block;animation:float 5s ease-in-out infinite;filter:drop-shadow(0 12px 22px rgba(160,130,220,.35))}
+@keyframes float{50%{transform:translateY(-9px)}}
+.bot.glow{animation:float 5s ease-in-out infinite,glow 1.2s ease-in-out 2}
+@keyframes glow{50%{filter:drop-shadow(0 0 30px #fff) drop-shadow(0 0 50px #ffb3d6) brightness(1.08)}}
+.eo{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.spk{position:absolute;left:50%;top:42%;font-size:20px;pointer-events:none;animation:burst 1.3s ease-out forwards;z-index:3}
+@keyframes burst{from{transform:translate(-50%,-50%) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.3);opacity:0}}
+.bubble{position:relative;margin:10px auto 0;max-width:420px;background:rgba(255,255,255,.82);border-radius:18px;padding:12px 16px;text-align:center;font-size:15px;box-shadow:0 6px 20px rgba(150,120,200,.25);min-height:50px}
+.bubble:before{content:"";position:absolute;top:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom-color:rgba(255,255,255,.82)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 4px}
+.chips button{border:0;background:rgba(255,255,255,.6);padding:7px 12px;border-radius:999px;font-size:13px;box-shadow:0 2px 8px rgba(150,120,200,.2)}
+.chips button:hover{background:#fff}
+.meter{background:var(--card);border-radius:16px;padding:10px 14px;margin:10px 0;font-size:13px}
+.mhead{display:flex;justify-content:space-between;font-weight:700}
+.track{height:10px;background:#efe6fb;border-radius:99px;overflow:hidden;margin:7px 0 2px}
+#fill{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#ffb3cf,#c9b6ff,#aee8ff,#fff3a8);transition:width .35s}
+.mticks{display:flex;justify-content:space-between;font-size:14px;padding:0 2px}
+#meterHint{margin:2px 0 0;color:var(--soft);text-align:center}
+.inbox{display:flex;gap:8px;align-items:flex-end;background:#fff;border-radius:24px;padding:8px 8px 8px 16px;box-shadow:0 8px 24px rgba(150,120,200,.3)}
+.inbox textarea{flex:1;border:0;outline:0;resize:none;font:inherit;font-size:16px;color:#4a3a6a;background:transparent;padding:8px 0;min-height:48px}
+.inbox textarea::placeholder{color:#a898c4}
+.inbox:focus-within{box-shadow:0 0 0 3px #7b3fe4,0 8px 24px rgba(150,120,200,.3)}
+.mint{border:0;background:var(--sol);color:#fff;font-weight:800;font-size:16px;padding:14px 22px;border-radius:30px;box-shadow:0 6px 18px rgba(123,63,228,.4);text-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.mint:hover{transform:translateY(-2px) scale(1.02)}
+.mint:disabled{opacity:.6}
+.mintrow{margin-top:12px;display:flex}
+.mintrow .mint{width:100%}
+.bookhead{text-align:center;margin:8px 0 14px}
+.bookhead h2{margin:0;font-size:20px}
+.bookhead p{margin:2px 0 0;color:var(--soft);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+.card{border:0;text-align:center;background:var(--card);border-radius:20px;padding:14px 8px 12px;box-shadow:0 6px 18px rgba(150,120,200,.25);transition:transform .2s;animation:pop .5s both}
+.card:hover{transform:translateY(-3px) rotate(-1deg)}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.card .rl{font-weight:800;font-size:13px;margin-top:8px}
+.card .dt{font-size:12px;color:var(--soft)}
+.card .sn{font-size:12px;margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:36px}
+.stk{--sz:96px;--tint:#fff;position:relative;isolation:isolate;width:var(--sz);height:var(--sz);margin:0 auto;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-size:calc(var(--sz)*.46);background:radial-gradient(circle at 35% 30%,#fff,var(--tint));box-shadow:0 5px 14px rgba(120,90,180,.3)}
+.stk.sparkle{box-shadow:0 0 0 3px #ffd6ec,0 0 22px #ffb3d6,0 5px 14px rgba(120,90,180,.3)}
+.stk.sparkle:before{content:"✨";position:absolute;top:-8px;right:-6px;font-size:calc(var(--sz)*.22);animation:tw 2s infinite}
+.stk.rainbow{background:linear-gradient(135deg,#fff,#e6d9ff,#d4ffee)}
+.stk.rainbow:before{content:"";position:absolute;inset:-9px;border-radius:50%;z-index:-1;background:conic-gradient(#ff9fbd,#c9b6ff,#aee8ff,#fff3a8,#ff9fbd);filter:blur(4px);animation:spin 6s linear infinite}
+.stk.rainbow:after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.9) 50%,transparent 62%);background-size:250% 100%;animation:shine 3s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
+.stk.big{--sz:130px}
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(90,70,140,.35);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px}
+.overlay[hidden],.modal[hidden]{display:none}
+.mbox{background:#fff;border-radius:24px;padding:26px 24px;text-align:center;width:min(320px,100%);box-shadow:0 14px 40px rgba(80,50,140,.4)}
+.mbox .spin{font-size:44px;display:inline-block;animation:spin 2.4s linear infinite}
+.mbox p{margin:10px 0 12px;font-weight:700}
+.pbar{height:8px;background:#efe6fb;border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--sol);transition:width 2.3s linear}
+.modal{position:fixed;inset:0;z-index:60;background:rgba(70,50,120,.5);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto}
+.sheet{position:relative;width:min(430px,100%);max-height:96vh;overflow:auto;background:linear-gradient(#fff0f7,#efe6ff);border-radius:26px;padding:24px 20px 20px;text-align:center;box-shadow:0 18px 50px rgba(60,30,120,.5);animation:pop .4s both}
+.x{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:#fff;font-weight:800}
+.env{font-size:80px;animation:float 2.5s ease-in-out infinite}
+.paper{background:#fff8e7;color:#5a4a3a;border-radius:10px;padding:18px 18px 14px;text-align:left;font-size:15px;line-height:1.95;transform:rotate(-1.2deg);box-shadow:0 6px 18px rgba(100,70,40,.2);margin:14px 0 12px;background-image:repeating-linear-gradient(transparent 0 29px,rgba(200,170,120,.18) 29px 30px)}
+.paper p{margin:0 0 6px}
+.paper .sg{text-align:right;font-weight:700;color:#8a6a5a;margin-top:4px}
+.badge{display:inline-block;margin-top:10px;background:#fff;border-radius:99px;padding:3px 12px;font-weight:800;font-size:13px}
+.proof{background:#fff;border-radius:12px;padding:8px 10px;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;text-align:left}
+.proof code{font-family:ui-monospace,Menlo,monospace;background:#f3ecff;padding:2px 6px;border-radius:6px}
+.mbtns{display:flex;gap:8px}
+.mbtns button{flex:1}
+.toast{position:fixed;z-index:90;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:14px;box-shadow:0 8px 24px rgba(60,30,100,.4);max-width:92vw;text-align:center}
+.toast[hidden]{display:none}
+.empty{grid-column:1/-1;text-align:center;color:var(--soft);padding:30px 0}
+@media(min-width:700px){.botwrap{width:340px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bgcloud a"></div><div class="bgcloud b"></div><div class="bgcloud c"></div>
+<span class="tw" style="top:90px;left:7%">✨</span><span class="tw" style="top:160px;right:8%;animation-delay:-1.2s">✨</span><span class="tw" style="top:52%;left:4%;animation-delay:-2s;font-size:12px">✦</span>
+
+<header>
+  <div class="logo"><span aria-hidden="true">☁️</span><span data-i18n="appName"></span></div>
+  <div class="hr">
+    <button class="chip" id="walletChip" data-demo="wallet-chip" aria-haspopup="true"></button>
+    <div class="lang" data-demo="lang-switch" role="group" aria-label="Language">
+      <button data-lang="ja" data-demo="lang-ja" aria-pressed="false">日本語</button>
+      <button data-lang="en" data-demo="lang-en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+  <div class="wpanel" id="wpanel" hidden data-demo="wallet-panel"></div>
+</header>
+
+<main>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabTalk" data-tab="talk" data-demo="tab-talk" aria-selected="true" data-i18n="tabTalk"></button>
+    <button role="tab" id="tabBook" data-tab="book" data-demo="tab-book" aria-selected="false"></button>
+  </div>
+
+  <section id="talk">
+    <div class="lvl"><span id="lvlText"></span><span class="dots" id="lvlDots" aria-hidden="true"></span></div>
+    <div class="botwrap" id="botwrap" data-demo="cloud-bot">
+      <svg class="bot" id="bot" viewBox="0 0 200 150" role="img" data-i18n-aria="botAria">
+        <defs>
+          <radialGradient id="gb" cx="50%" cy="30%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#ffeaf3"/></radialGradient>
+          <radialGradient id="gs" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <filter id="fb"><feGaussianBlur stdDeviation="7"/></filter>
+        </defs>
+        <g filter="url(#fb)" fill="#fff" opacity=".9"><circle cx="100" cy="85" r="62"/><circle cx="60" cy="95" r="44"/><circle cx="140" cy="95" r="44"/></g>
+        <g fill="url(#gb)"><circle cx="100" cy="85" r="55"/><circle cx="60" cy="95" r="38"/><circle cx="140" cy="95" r="38"/><circle cx="75" cy="55" r="32"/><circle cx="125" cy="55" r="32"/></g>
+        <ellipse cx="100" cy="60" rx="46" ry="22" fill="url(#gs)"/>
+        <g id="eyesOpen" class="eo">
+          <ellipse cx="80" cy="88" rx="6" ry="9" fill="#5a4a7a"/><ellipse cx="120" cy="88" rx="6" ry="9" fill="#5a4a7a"/>
+          <circle cx="82" cy="84" r="2.6" fill="#fff"/><circle cx="122" cy="84" r="2.6" fill="#fff"/>
+          <circle cx="78" cy="92" r="1.3" fill="#fff" opacity=".8"/><circle cx="118" cy="92" r="1.3" fill="#fff" opacity=".8"/>
+        </g>
+        <g id="eyesClosed" style="display:none" stroke="#5a4a7a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M73 90 Q80 96 87 90"/><path d="M113 90 Q120 96 127 90"/></g>
+        <ellipse cx="62" cy="106" rx="12" ry="7" fill="#ff9fbd" opacity=".9"/><ellipse cx="138" cy="106" rx="12" ry="7" fill="#ff9fbd" opacity=".9"/>
+        <path id="mouth" d="M92 104 Q100 113 108 104" stroke="#5a4a7a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="bubble" id="bubble" aria-live="polite" data-demo="bot-bubble"></div>
+    <div class="chips" id="chips"></div>
+    <div class="meter" data-demo="rarity-meter">
+      <div class="mhead"><span data-i18n="meterTitle"></span><span id="meterLabel"></span></div>
+      <div class="track"><i id="fill"></i></div>
+      <div class="mticks" aria-hidden="true"><span>☁️</span><span>🌸</span><span>🌈</span></div>
+      <p id="meterHint"></p>
+    </div>
+    <div class="inbox">
+      <textarea id="feel" rows="2" maxlength="200" data-demo="feeling-input" data-i18n-ph="placeholder" data-i18n-aria="inputAria"></textarea>
+    </div>
+    <div class="mintrow"><button class="mint" id="mintBtn" data-demo="mint-button" data-i18n="mintBtn"></button></div>
+  </section>
+
+  <section id="book" hidden>
+    <div class="bookhead"><h2 data-i18n="bookTitle"></h2><p id="bookSub"></p></div>
+    <div class="grid" id="grid" data-demo="sticker-grid"></div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" hidden data-demo="mint-progress">
+  <div class="mbox"><span class="spin">☁️</span><p id="stepText"></p><div class="pbar"><i id="pfill"></i></div></div>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" data-demo="letter-modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+
+<script>
+const I18N={
+ja:{
+title:"ふわミント｜ふわふわ雲のシール帳",appName:"ふわミント",tabTalk:"おはなし",tabBook:"シール帳",
+walletConnect:"👛 つなぐ",walletTitle:"デモ用ウォレット",walletAddr:"アドレス",walletNet:"ネットワーク",walletNetV:"Solana Devnet（デモ）",walletBal:"残高",walletCnt:"ミントしたシール",walletCntV:"{n}枚",
+walletNote:"これはデモです。本物のSOLANAにはつながっていません。お金はかかりません。",walletCopy:"コピー",walletReset:"はじめにもどす",walletDo:"ウォレットをつなぐ",
+copied:"コピーしたよ（デモ）",walletMade:"デモ用ウォレットを作ったよ",resetDone:"シール帳をはじめにもどしたよ",connecting:"つないでるよ…",
+level:"なかよし Lv.{n}",botAria:"ふわふわ雲のBot",inputAria:"今日のひとこと",
+greet:"こんばんは☁️ 今日はどんな一日だった？",placeholder:"ひとこと書いてね…",
+chip1:"今日はうれしいことがあったよ",chip2:"ちょっとつかれちゃった…",chip3:"友だちにありがとうって言えたよ。たくさん笑った一日だった",
+mintBtn:"✨ ふわっとミント",meterTitle:"きもちのレア度",
+hint0:"ひとこと書くと、シールの輝きが見えてくるよ",hint1:"もっと話すと、もっと輝くよ",hint2:"きらきらになりそう！",hint3:"にじ色になりそう！🌈",
+r_common:"ふつう",r_sparkle:"きらきら",r_rainbow:"にじ色",
+m_happy:"うれしい",m_grateful:"ありがとう",m_sad:"さみしい",m_tired:"つかれた",m_anxious:"ふあん",m_calm:"おだやか",
+needText:"まずは、ひとこと話してね☁️",
+step1:"きもちをあつめてるよ…",step2:"ふわっと光ってるよ…",step3:"帳にきざんでるよ（デモ）…",
+reply_happy:"わぁ、それはすてき！",reply_grateful:"あったかい気持ちだね。",reply_sad:"うん、聞いてるよ。",reply_tired:"おつかれさま、がんばったね。",reply_anxious:"だいじょうぶ、ここにいるよ。",reply_calm:"ゆっくりした一日だったね。",
+envText:"雲のBotが、あなたに手紙を持ってきたよ",openLetter:"💌 手紙をひらく",
+letterHi:"今日もおつかれさま。",quote:"「{q}」って話してくれて、ありがとう。",letterBye:"ゆっくり休んでね。おやすみ🌙",sign:"— 雲のBotより",
+proof:"証明ID",demoTag:"（デモ）",toBook:"📒 シール帳へ",goodnight:"おやすみ 🌙",close:"とじる",
+bookSub:"{n}枚のきもちが貼ってあるよ",empty:"まだシールがないよ。雲のBotに話しかけてみてね☁️",
+minted:"シールを帳に貼ったよ",night:"おやすみなさい。いい夢を🌙",
+rarityLine:{common:"今日は、やわらかな雲のシールになったよ。",sparkle:"たくさん話してくれたから、きらきら光るシールになったよ。",rainbow:"気持ちがいっぱい届いたから、特別なにじ色のシールになったよ。"},
+letters:{
+happy:["うれしい気持ちが、こっちまでぽかぽか伝わってきたよ。","楽しかったことを教えてくれてありがとう。聞いているだけで、笑顔になっちゃった。"],
+grateful:["ありがとうの気持ち、とってもあたたかいね。あなたのやさしさが、雲にしみこんだよ。","だれかを思う心は、いちばんきれいに光るんだ。"],
+sad:["つらかったね。無理に元気にならなくて大丈夫。ここでは泣いてもいいんだよ。","話してくれてありがとう。ふわふわの雲で、そっと包んでおくね。"],
+tired:["がんばりすぎちゃったね。今夜はなにも考えずに、ふかふかで休もう。","まぶたが重くなったら、それがおやすみの合図だよ。"],
+anxious:["ふあんな気持ちも、ちゃんと話せたね。それだけでえらいよ。","あしたのことは、あしたの自分にまかせて大丈夫。今はゆっくり深呼吸しよう。"],
+calm:["おだやかな一日も、すてきな一日。ふつうの日こそ宝ものだよ。","なんでもない一日を話してくれて、うれしいな。そっと帳にしまっておくね。"]}
+},
+en:{
+title:"Fuwa Mint – Cloud Sticker Book",appName:"Fuwa Mint",tabTalk:"Talk",tabBook:"Sticker book",
+walletConnect:"👛 Connect",walletTitle:"Demo wallet",walletAddr:"Address",walletNet:"Network",walletNetV:"Solana Devnet (demo)",walletBal:"Balance",walletCnt:"Stickers minted",walletCntV:"{n}",
+walletNote:"This is a demo. It is not connected to real Solana, and it costs nothing.",walletCopy:"Copy",walletReset:"Start over",walletDo:"Connect wallet",
+copied:"Copied (demo)",walletMade:"Demo wallet created",resetDone:"Sticker book reset",connecting:"Connecting…",
+level:"Bond Lv.{n}",botAria:"Fluffy Cloud Bot",inputAria:"Your thought for today",
+greet:"Good evening ☁️ How was your day?",placeholder:"Write a little something…",
+chip1:"Something happy happened today",chip2:"I'm a little tired…",chip3:"I thanked my friend today. We laughed a lot, it was a good day",
+mintBtn:"✨ Fluffy Mint",meterTitle:"Feeling rarity",
+hint0:"Write something and your sticker will start to glow",hint1:"Tell me more and it will shine more",hint2:"It's going to sparkle!",hint3:"It's going to be rainbow! 🌈",
+r_common:"Soft",r_sparkle:"Sparkle",r_rainbow:"Rainbow",
+m_happy:"Happy",m_grateful:"Thankful",m_sad:"Lonely",m_tired:"Tired",m_anxious:"Worried",m_calm:"Calm",
+needText:"Tell me one little thing first ☁️",
+step1:"Gathering your feelings…",step2:"Glowing softly…",step3:"Stamping it in your book (demo)…",
+reply_happy:"Wow, that's lovely!",reply_grateful:"What a warm feeling.",reply_sad:"I'm listening.",reply_tired:"You did your best today.",reply_anxious:"It's okay. I'm right here.",reply_calm:"A slow, gentle day.",
+envText:"Cloud Bot brought you a letter",openLetter:"💌 Open the letter",
+letterHi:"You did well today.",quote:"Thank you for telling me, “{q}”.",letterBye:"Rest well. Good night 🌙",sign:"— Cloud Bot",
+proof:"Proof ID",demoTag:" (demo)",toBook:"📒 My book",goodnight:"Good night 🌙",close:"Close",
+bookSub:"{n} feelings saved",empty:"No stickers yet. Say hello to Cloud Bot ☁️",
+minted:"Sticker added to your book",night:"Good night. Sweet dreams 🌙",
+rarityLine:{common:"Today became a soft cloud sticker.",sparkle:"You shared a lot, so it became a sparkly sticker.",rainbow:"Your feelings reached me so much that it became a special rainbow sticker."},
+letters:{
+happy:["Your happy feeling made me feel warm all over.","Thank you for sharing what was fun. It made me smile too."],
+grateful:["Your thankfulness is so warm. Your kindness soaked into my cloud.","A heart that thinks of others shines the brightest."],
+sad:["That sounded hard. You don't have to cheer up. It's okay to cry here.","Thank you for telling me. I'll wrap it up gently in my soft cloud."],
+tired:["You tried so hard. Tonight, let's rest without thinking about anything.","When your eyes feel heavy, that's the sign to say good night."],
+anxious:["You put your worries into words. That alone is brave.","Leave tomorrow to tomorrow's you. For now, let's take a slow, deep breath."],
+calm:["A calm day is a lovely day. Ordinary days are treasures.","I'm glad you told me about your quiet day. I'll keep it safe in your book."]}
+}};
+const MOODS=['grateful','happy','sad','tired','anxious'];
+const KW={grateful:['ありがと','感謝','thank','grateful'],happy:['うれし','嬉し','楽し','最高','好き','やった','笑','たのし','happy','fun','great','love','glad','nice','laugh'],sad:['かなし','悲し','さみし','寂し','つらい','辛い','泣','sad','lonely','cry','hard'],tired:['つかれ','疲れ','ねむ','眠','しんど','tired','sleepy','exhaust'],anxious:['不安','こわ','怖','心配','緊張','worr','anxi','nervous','scared']};
+const EMO={happy:'🌸',grateful:'💗',sad:'🫧',tired:'🌙',anxious:'🍀',calm:'☁️'};
+const TINT={happy:'#ffe0ee',grateful:'#ffd9e6',sad:'#dfeaff',tired:'#e6defa',anxious:'#dcf5e8',calm:'#eef2ff'};
+const $=s=>document.querySelector(s);
+let lang='en',tab='talk',entries=[],wallet=null,busy=false,bubbleKey='greet',bubbleRaw=null,openEntry=null,modalPhase='letter',toastTimer=null;
+
+function t(k,v){let s=I18N[lang][k];if(s===undefined)s=I18N.en[k];if(s===undefined)s=k;if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function b58(n){const c='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';let s='';for(let i=0;i<n;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+function shortId(s){return s.slice(0,4)+'…'+s.slice(-4)}
+
+function seed(){
+  const d=864e5,n=Date.now();
+  return [
+   {id:'s1',text:{ja:'友だちに会えて、たくさん笑った。ありがとうって思えた一日だった。',en:'I met a friend and laughed so much. I felt thankful all day.'},mood:'grateful',rarity:'rainbow',score:11,variant:0,ts:n-1*d,tx:'4mNqR8vLx2TcWz9HfYb3KpJd6sAeUo1GhVtXr7QyCnZk5wBf3QaD2MjE8LsPuXx9TzHq'},
+   {id:'s2',text:{ja:'仕事がいそがしくて少しつかれた。',en:"Work was busy and I'm a little tired."},mood:'tired',rarity:'sparkle',score:6,variant:1,ts:n-2*d,tx:'7xKpWq3NdRtYv5LbHc8ZsMeAu2GfJo9XhTn4QkCyBz6VwDr1PaE3SjUi7MgLx8f3Qa'},
+   {id:'s3',text:{ja:'なんでもない日だったけど、夕やけがきれいだった。',en:'Nothing special, but the sunset was beautiful.'},mood:'calm',rarity:'common',score:3,variant:0,ts:n-3*d,tx:'2bVcXzNmQ4LkJhGfDsAp9oIuYtRe6WqEw3TyUiOp5aSdFgHj8KlZxCvBn1MmQwErTy7u'}
+  ];
+}
+function load(){
+  let e=null,w=null;
+  try{e=JSON.parse(lsGet('fuwa_entries'))}catch(x){}
+  try{w=JSON.parse(lsGet('fuwa_wallet'))}catch(x){}
+  entries=Array.isArray(e)?e:seed();
+  wallet=(w&&w.addr)?w:null;
+}
+function save(){lsSet('fuwa_entries',JSON.stringify(entries));lsSet('fuwa_wallet',JSON.stringify(wallet))}
+
+function analyze(text){
+  const s=text.trim();if(!s)return{score:0,mood:'calm'};
+  const low=s.toLowerCase();
+  const latin=(s.match(/[A-Za-z]/g)||[]).length;
+  const units=s.replace(/[A-Za-z\s]/g,'').length+latin/2.5;
+  let emo=0,best='calm',bn=0;
+  for(const m of MOODS){let n=0;for(const w of KW[m])if(low.includes(w))n++;emo+=n;if(n>bn){bn=n;best=m}}
+  const sc=s.split(/[。.!?！？\n]+/).filter(x=>x.trim()).length;
+  const score=Math.min(units,80)/8+Math.min(emo,3)*2.5+(sc>1?2:0)+(sc>2?1:0);
+  return{score,mood:best};
+}
+function rarityOf(sc){return sc>=10?'rainbow':sc>=4.5?'sparkle':'common'}
+function entryText(e){return typeof e.text==='object'?(e.text[lang]||e.text.en):e.text}
+
+/* face */
+function setFace(mood){
+  const closed=mood==='tired';
+  $('#eyesOpen').style.display=closed?'none':'';
+  $('#eyesClosed').style.display=closed?'':'none';
+  const M={happy:'M88 103 Q100 120 112 103',grateful:'M88 103 Q100 119 112 103',calm:'M92 104 Q100 113 108 104',sad:'M93 110 Q100 104 107 110',tired:'M95 108 Q100 112 105 108',anxious:'M93 108 Q100 106 107 108'};
+  $('#mouth').setAttribute('d',M[mood]||M.calm);
+}
+
+/* render */
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.title=t('title');
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  renderAll();
+}
+function renderAll(){renderChips();renderBubble();renderLevel();renderMeter();renderWallet();renderBook();if(!$('#modal').hidden)renderModal()}
+function renderChips(){
+  $('#chips').innerHTML=[1,2,3].map(i=>`<button data-chip="${i}" data-demo="chip-${i}">${esc(t('chip'+i))}</button>`).join('');
+}
+function renderBubble(){$('#bubble').textContent=bubbleRaw?t(bubbleRaw):t(bubbleKey)}
+function renderLevel(){
+  const n=entries.length;
+  $('#lvlText').textContent=t('level',{n:1+Math.floor(n/3)});
+  $('#lvlDots').innerHTML=[0,1,2].map(i=>`<i class="${i<n%3?'on':''}"></i>`).join('');
+  $('#tabBook').textContent=t('tabBook')+' ('+n+')';
+}
+function renderMeter(){
+  const v=$('#feel').value;const a=analyze(v);
+  const r=rarityOf(a.score);const has=v.trim().length>0;
+  $('#fill').style.width=has?Math.max(8,Math.min(a.score/12,1)*100)+'%':'0%';
+  $('#meterLabel').textContent=has?`${EMO[a.mood]} ${t('m_'+a.mood)} ／ ${t('r_'+r)}`:'';
+  $('#meterHint').textContent=t(!has?'hint0':r==='common'?'hint1':r==='sparkle'?'hint2':'hint3');
+}
+function renderWallet(){
+  $('#walletChip').textContent=wallet?'👛 '+shortId(wallet.addr):t('walletConnect');
+  const p=$('#wpanel');
+  if(!wallet){
+    p.innerHTML=`<h3>${t('walletTitle')}</h3><p class="wnote">${t('walletNote')}</p><div class="wbtns"><button class="sbtn pri" data-act="connect" data-demo="wallet-connect">${t('walletDo')}</button></div>`;
+  }else{
+    p.innerHTML=`<h3>${t('walletTitle')}</h3>
+    <div class="wrow"><span>${t('walletAddr')}</span><b>${shortId(wallet.addr)}</b></div>
+    <div class="wrow"><span>${t('walletNet')}</span><b>${t('walletNetV')}</b></div>
+    <div class="wrow"><span>${t('walletBal')}</span><b>0.00 SOL</b></div>
+    <div class="wrow"><span>${t('walletCnt')}</span><b>${t('walletCntV',{n:entries.length})}</b></div>
+    <p class="wnote">${t('walletNote')}</p>
+    <div class="wbtns"><button class="sbtn" data-act="copyaddr" data-demo="wallet-copy">${t('walletCopy')}</button><button class="sbtn" data-act="reset" data-demo="wallet-reset">${t('walletReset')}</button></div>`;
+  }
+}
+function stk(e,big){return `<div class="stk ${e.rarity}${big?' big':''}" style="--tint:${TINT[e.mood]}"><span aria-hidden="true">${EMO[e.mood]}</span></div>`}
+function fmtDate(ts){return new Date(ts).toLocaleDateString(lang==='ja'?'ja-JP':'en-US',{month:'short',day:'numeric',weekday:'short'})}
+function renderBook(){
+  $('#bookSub').textContent=t('bookSub',{n:entries.length});
+  const g=$('#grid');
+  if(!entries.length){g.innerHTML=`<div class="empty">${t('empty')}</div>`;return}
+  g.innerHTML=entries.map((e,i)=>`<button class="card" style="animation-delay:${Math.min(i,8)*50}ms" data-open="${e.id}" data-demo="sticker-card-${i+1}">${stk(e)}<div class="rl">${t('r_'+e.rarity)} ・ ${t('m_'+e.mood)}</div><div class="dt">${fmtDate(e.ts)}</div><div class="sn">${esc(entryText(e))}</div></button>`).join('');
+}
+
+/* modal */
+function letterParas(e){
+  const L=I18N[lang];const txt=entryText(e);
+  const q=txt.length>30?txt.slice(0,30)+'…':txt;
+  return [t('letterHi'),t('quote',{q:esc(q)}),L.letters[e.mood][e.variant%2],L.rarityLine[e.rarity],t('letterBye')];
+}
+function openModal(e,isNew){openEntry=e;modalPhase=isNew?'env':'letter';$('#modal').hidden=false;renderModal();
+  setTimeout(()=>{const b=$('#sheet button[data-act="openletter"],#sheet button[data-act="tobook"],#sheet button[data-act="closem"]');if(b)b.focus()},50)}
+function renderModal(){
+  const e=openEntry;if(!e)return;const sh=$('#sheet');
+  const x=`<button class="x" data-act="closem" data-demo="modal-close" aria-label="${t('close')}">✕</button>`;
+  if(modalPhase==='env'){
+    sh.innerHTML=`${x}<div class="env" aria-hidden="true">💌</div><p><b>${t('envText')}</b></p><button class="mint" data-act="openletter" data-demo="open-letter">${t('openLetter')}</button>`;
+  }else{
+    sh.innerHTML=`${x}${stk(e,true)}<div class="badge">${t('r_'+e.rarity)} ・ ${EMO[e.mood]} ${t('m_'+e.mood)}</div>
+    <div class="paper" data-demo="letter-paper">${letterParas(e).map(p=>`<p>${p}</p>`).join('')}<p class="sg">${t('sign')} 🌟</p></div>
+    <div class="proof"><span>${t('proof')}${t('demoTag')}: <code>${shortId(e.tx)}</code></span><button class="sbtn" data-act="copytx" data-demo="copy-proof">${t('walletCopy')}</button></div>
+    <div class="mbtns"><button class="sbtn" data-act="tobook" data-demo="letter-to-book">${t('toBook')}</button><button class="mint" data-act="goodnight" data-demo="letter-goodnight">${t('goodnight')}</button></div>`;
+  }
+}
+function closeModal(){$('#modal').hidden=true;openEntry=null}
+
+function toast(msg){const el=$('#toast');el.textContent=msg;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,2400)}
+function setTab(n){
+  tab=n;$('#talk').hidden=n!=='talk';$('#book').hidden=n!=='book';
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===n));
+}
+function createWallet(cb){
+  toast(t('connecting'));
+  setTimeout(()=>{wallet={addr:b58(44)};save();renderWallet();toast(t('walletMade'));if(cb)cb()},700);
+}
+function burst(){
+  const w=$('#botwrap');const em=['✨','💗','⭐','🌸','✦'];
+  for(let i=0;i<14;i++){
+    const s=document.createElement('span');s.className='spk';s.textContent=em[i%em.length];
+    const a=Math.random()*Math.PI*2,r=90+Math.random()*80;
+    s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r*.8+'px');
+    s.style.animationDelay=(Math.random()*.3)+'s';w.appendChild(s);setTimeout(()=>s.remove(),1800);
+  }
+}
+function doMint(){
+  if(busy)return;
+  const text=$('#feel').value.trim();
+  if(!text){toast(t('needText'));$('#feel').focus();return}
+  busy=true;$('#mintBtn').disabled=true;
+  const go=()=>{
+    const a=analyze(text);
+    const entry={id:'e'+Date.now(),text:text,mood:a.mood,rarity:rarityOf(a.score),score:+a.score.toFixed(1),variant:Math.floor(Math.random()*2),ts:Date.now(),tx:b58(88)};
+    bubbleKey='reply_'+a.mood;bubbleRaw=bubbleKey;renderBubble();setFace(a.mood);
+    $('#bot').classList.add('glow');burst();
+    const ov=$('#overlay');ov.hidden=false;
+    const st=$('#stepText'),pf=$('#pfill');pf.style.transition='none';pf.style.width='0';
+    st.textContent=t('step1');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{pf.style.transition='width 2.3s linear';pf.style.width='100%'}));
+    setTimeout(()=>st.textContent=t('step2'),800);
+    setTimeout(()=>st.textContent=t('step3'),1600);
+    setTimeout(()=>{
+      ov.hidden=true;$('#bot').classList.remove('glow');
+      entries.unshift(entry);save();
+      $('#feel').value='';renderLevel();renderMeter();renderBook();renderWallet();
+      busy=false;$('#mintBtn').disabled=false;
+      openModal(entry,true);
+    },2400);
+  };
+  if(!wallet)createWallet(go);else go();
+}
+function copyText(s){try{navigator.clipboard&&navigator.clipboard.writeText(s)}catch(e){}toast(t('copied'))}
+
+/* events */
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('button');
+  if(!el){if(!ev.target.closest('#wpanel'))$('#wpanel').hidden=true;return}
+  if(el.id!=='walletChip'&&!el.closest('#wpanel'))$('#wpanel').hidden=true;
+  if(el.dataset.lang){lang=el.dataset.lang;lsSet('lang',lang);applyLang();return}
+  if(el.dataset.tab){setTab(el.dataset.tab);return}
+  if(el.id==='walletChip'){$('#wpanel').hidden=!$('#wpanel').hidden;return}
+  if(el.dataset.chip){const f=$('#feel');f.value=t('chip'+el.dataset.chip);bubbleRaw=null;bubbleKey='greet';renderBubble();onInput();f.focus();return}
+  if(el.id==='mintBtn'){doMint();return}
+  if(el.dataset.open){const e=entries.find(x=>x.id===el.dataset.open);if(e)openModal(e,false);return}
+  const act=el.dataset.act;if(!act)return;
+  if(act==='connect')createWallet();
+  else if(act==='copyaddr')copyText(wallet.addr);
+  else if(act==='reset'){entries=seed();save();renderAll();toast(t('resetDone'))}
+  else if(act==='closem')closeModal();
+  else if(act==='openletter'){modalPhase='letter';renderModal();const b=$('#sheet button[data-act="tobook"]');if(b)b.focus()}
+  else if(act==='copytx')copyText(openEntry.tx);
+  else if(act==='tobook'){closeModal();setTab('book')}
+  else if(act==='goodnight'){closeModal();setTab('talk');bubbleRaw=null;bubbleKey='night';renderBubble();setFace('tired');toast(t('night'))}
+});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#wpanel').hidden=true}});
+function onInput(){
+  const a=analyze($('#feel').value);
+  setFace($('#feel').value.trim()?a.mood:'calm');
+  renderMeter();
+}
+$('#feel').addEventListener('input',()=>{if(bubbleKey!=='greet'||bubbleRaw){bubbleRaw=null;bubbleKey='greet';renderBubble()}onInput()});
+
+/* init */
+(function(){
+  let l=null;
+  if(window.APP_LANG==='ja'||window.APP_LANG==='en')l=window.APP_LANG;
+  if(!l){try{const q=new URLSearchParams(location.search).get('lang');if(q==='ja'||q==='en')l=q}catch(e){}}
+  if(!l){const s=lsGet('lang');if(s==='ja'||s==='en')l=s}
+  lang=l||'en';
+  load();setFace('calm');applyLang();
+})();
+</script>
+</body>
+</html>
